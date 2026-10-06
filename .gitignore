@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+genres_original/
+images_original/
+features_3_sec.csv
+features_30_sec.csv
+
+*.npz
