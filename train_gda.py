@@ -32,7 +32,7 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 # PCA
-pca = PCA(n_components=50, random_state=42)
+pca = PCA(n_components=50, svd_solver="full")
 
 X_train = pca.fit_transform(X_train)
 X_test = pca.transform(X_test)

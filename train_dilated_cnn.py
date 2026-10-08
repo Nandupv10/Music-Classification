@@ -1,6 +1,24 @@
+import os
+import random
 import numpy as np
 import tensorflow as tf
 
+# ============================================================
+# Make CNN training reproducible
+# ============================================================
+SEED = 42
+
+os.environ["PYTHONHASHSEED"] = str(SEED)
+os.environ["TF_DETERMINISTIC_OPS"] = "1"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+random.seed(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+
+# ============================================================
+# Imports
+# ============================================================
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
     Conv1D,
@@ -11,10 +29,11 @@ from tensorflow.keras.layers import (
     Dense
 )
 from tensorflow.keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 
-# -----------------------------
+# ============================================================
 # Load MFCC dataset
-# -----------------------------
+# ============================================================
 data = np.load("music_mfcc_dataset.npz")
 
 X = data["X"]
@@ -30,25 +49,23 @@ X = np.transpose(X, (0, 2, 1))
 
 print("CNN input shape:", X.shape)
 
-# -----------------------------
+# ============================================================
 # Train-test split
-# -----------------------------
-from sklearn.model_selection import train_test_split
-
+# ============================================================
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     test_size=0.2,
-    random_state=42,
+    random_state=SEED,
     stratify=y
 )
 
 y_train_cat = to_categorical(y_train, num_classes=5)
 y_test_cat = to_categorical(y_test, num_classes=5)
 
-# -----------------------------
+# ============================================================
 # 2-Layer Dilated CNN
-# -----------------------------
+# ============================================================
 model = Sequential([
 
     # Dilated Convolution Layer 1
@@ -88,9 +105,9 @@ model = Sequential([
     Dense(5, activation="softmax")
 ])
 
-# -----------------------------
+# ============================================================
 # Compile
-# -----------------------------
+# ============================================================
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss="categorical_crossentropy",
@@ -100,23 +117,33 @@ model.compile(
 # Show architecture
 model.summary()
 
-# -----------------------------
+# ============================================================
 # Train
-# -----------------------------
+# ============================================================
 history = model.fit(
     X_train,
     y_train_cat,
     epochs=20,
     batch_size=16,
-    validation_split=0.2
+    validation_split=0.2,
+    shuffle=True
 )
 
-# -----------------------------
+# ============================================================
 # Test
-# -----------------------------
+# ============================================================
 test_loss, test_accuracy = model.evaluate(
     X_test,
-    y_test_cat
+    y_test_cat,
+    verbose=1
 )
 
 print("\nDilated CNN Test Accuracy:", test_accuracy)
+print("Dilated CNN Test Accuracy (%):", test_accuracy * 100)
+
+# ============================================================
+# Save trained CNN
+# ============================================================
+model.save("dilated_cnn_model.keras")
+
+print("\nSaved trained CNN as: dilated_cnn_model.keras")

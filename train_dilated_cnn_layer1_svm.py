@@ -3,7 +3,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
-
+from sklearn.decomposition import PCA
 # Load Layer 1 features
 data = np.load("dilated_cnn_layer1_features.npz")
 
@@ -21,7 +21,7 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 # Reduce dimensions using PCA
-pca = PCA(n_components=50)
+pca = PCA(n_components=50, svd_solver="full")
 X_train_pca = pca.fit_transform(X_train_scaled)
 X_test_pca = pca.transform(X_test_scaled)
 

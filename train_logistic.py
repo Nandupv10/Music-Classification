@@ -26,8 +26,10 @@ print("Training shape:", X_train.shape)
 print("Testing shape:", X_test.shape)
 
 # Create and train Logistic Regression
-model = LogisticRegression(max_iter=1000)
-
+model = LogisticRegression(
+    max_iter=1000,
+    random_state=42
+)
 model.fit(X_train, y_train)
 
 # Predict

@@ -29,7 +29,6 @@ X_test = scaler.transform(X_test)
 
 # PCA → 50 components
 pca = PCA(n_components=50, random_state=42)
-
 X_train = pca.fit_transform(X_train)
 X_test = pca.transform(X_test)
 
